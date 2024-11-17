@@ -4,7 +4,7 @@
     "@typescript-eslint/consistent-type-imports": "error",
     "unused-imports/no-unused-imports": "error",
     "@typescript-eslint/no-explicit-any": "off",
-    "prettier/prettier": "error",
+    // "prettier/prettier": "error",
     "space-in-parens": "error",
     "no-empty": "error",
     "no-multiple-empty-lines": "error",
