@@ -126,8 +126,12 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
     });
   },
   collapseNodes: nodeId => {
+    console.log("collapsed nodes: ", get().getCollapsedEdgeIds());
     const [childrenNodes] = getOutgoers(nodeId, get().nodes, get().edges);
-    const childrenEdges = getChildrenEdges(childrenNodes, get().edges);
+    // add another nodeId param
+    const childrenEdges = getChildrenEdges(childrenNodes, get().edges, nodeId);
+
+    console.log("childrenNodes ", childrenNodes, "childrenEdges ", childrenEdges);
 
     const nodeIds = childrenNodes.map(node => node.id);
     const edgeIds = childrenEdges.map(edge => edge.id);

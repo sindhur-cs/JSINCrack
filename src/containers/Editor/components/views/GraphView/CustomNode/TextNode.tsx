@@ -90,7 +90,10 @@ const Node = ({ node, x, y, hasCollapse = false }: CustomNodeProps) => {
           )}
 
           {isParent && hasCollapse && collapseButtonVisible && (
-            <StyledExpand aria-label="Expand" onClick={handleExpand}>
+            <StyledExpand aria-label="Expand" onClick={(e) => { 
+              handleExpand(e);
+              console.log("Collapse");
+            }}>
               {isExpanded ? <MdLinkOff size={18} /> : <MdLink size={18} />}
             </StyledExpand>
           )}
