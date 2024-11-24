@@ -16,6 +16,8 @@ export interface Graph {
   collapseAll: boolean;
   nodes: NodeData[];
   edges: EdgeData[];
+  freqMap: any;
+  expandedNodes: string[];
   collapsedNodes: string[];
   collapsedEdges: string[];
   collapsedParents: string[];
@@ -32,6 +34,8 @@ const initialStates: Graph = {
   collapseAll: false,
   nodes: [],
   edges: [],
+  freqMap: {},
+  expandedNodes: [],
   collapsedNodes: [],
   collapsedEdges: [],
   collapsedParents: [],
@@ -99,9 +103,14 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
       nodeId,
       get().nodes,
       get().edges,
-      get().collapsedParents
+      get().collapsedParents,
+      get().freqMap,
+      [],
+      true
     );
     const childrenEdges = getChildrenEdges(childrenNodes, get().edges);
+
+    console.log("Expand Nodes", childrenNodes);
 
     const nodesConnectedToParent = childrenEdges.reduce((nodes: string[], edge) => {
       edge.from && !nodes.includes(edge.from) && nodes.push(edge.from);
@@ -127,12 +136,14 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
   },
   collapseNodes: nodeId => {
     console.log("collapsed nodes: ", get().getCollapsedEdgeIds());
-    const [childrenNodes] = getOutgoers(nodeId, get().nodes, get().edges);
+    const [childrenNodes] = getOutgoers(nodeId, get().nodes, get().edges, [], get().freqMap, get().expandedNodes, false);
     // add another nodeId param
     const childrenEdges = getChildrenEdges(childrenNodes, get().edges, nodeId);
 
-    console.log("childrenNodes ", childrenNodes, "childrenEdges ", childrenEdges);
+    console.log("state based freq map ", get().freqMap);
 
+    console.log("childrenNodes ", childrenNodes, "childrenEdges ", childrenEdges);
+    
     const nodeIds = childrenNodes.map(node => node.id);
     const edgeIds = childrenEdges.map(edge => edge.id);
 
