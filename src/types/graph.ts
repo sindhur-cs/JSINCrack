@@ -5,6 +5,7 @@ export interface NodeData {
   text: string | [string, string][];
   width: number;
   height: number;
+  isError: boolean;
   path?: string;
   data: {
     type: NodeType;

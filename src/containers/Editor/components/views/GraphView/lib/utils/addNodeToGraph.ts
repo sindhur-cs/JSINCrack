@@ -14,11 +14,14 @@ export const addNodeToGraph = ({ graph, text, type = "null", isEmpty = false }: 
   const isParent = type === "array" || type === "object";
   const { width, height } = calculateNodeSize(text, isParent);
 
+  // simulating the errors or checks
+
   const node = {
     id,
     text,
     width,
     height,
+    isError: Math.random() > 0.5,
     data: {
       type,
       isParent,

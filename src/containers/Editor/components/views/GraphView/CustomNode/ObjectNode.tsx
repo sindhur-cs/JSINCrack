@@ -2,7 +2,7 @@ import React from "react";
 import type { CustomNodeProps } from "src/containers/Editor/components/views/GraphView/CustomNode";
 import { TextRenderer } from "./TextRenderer";
 import * as Styled from "./styles";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, TriangleAlert } from "lucide-react";
 
 type Value = [string, string];
 
@@ -28,9 +28,11 @@ const Row = ({ val, x, y, index }: RowProps) => {
 
 const Node = ({ node, x, y }: CustomNodeProps) => (
   <Styled.StyledForeignObject width={node.width} height={node.height} x={0} y={0} $isObject>
-    <div className="flex items-center justify-center absolute -top-2 -right-2 z-50 bg-green-500 rounded-full w-8 h-8">
+    {!(node.isError) ? <div className="flex items-center justify-center absolute -top-2 -right-2 z-50 bg-green-500 rounded-full w-8 h-8">
       <CheckCircle className="text-white w-5 h-5" />
-    </div>
+    </div> : <div className="flex items-center justify-center absolute -top-2 -right-2 z-50 bg-red-500 rounded-full w-8 h-8">
+      <TriangleAlert className="text-white w-5 h-5" />
+    </div> }
     {(node.text as Value[]).map((val, idx) => (
       <Row val={val} index={idx} x={x} y={y} key={idx} />
     ))}
