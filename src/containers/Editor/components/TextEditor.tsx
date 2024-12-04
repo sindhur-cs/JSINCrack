@@ -4,6 +4,8 @@ import styled from "styled-components";
 import Editor, { type EditorProps, loader, useMonaco } from "@monaco-editor/react";
 import useConfig from "src/store/useConfig";
 import useFile from "src/store/useFile";
+import { X } from "lucide-react";
+import useJsonEditor from "src/store/useJsonEditor";
 
 loader.config({
   paths: {
@@ -29,6 +31,7 @@ const TextEditor = () => {
   const getHasChanges = useFile(state => state.getHasChanges);
   const theme = useConfig(state => (state.darkmodeEnabled ? "vs-dark" : "light"));
   const fileType = useFile(state => state.format);
+  const { onClose } = useJsonEditor();
 
   React.useEffect(() => {
     monaco?.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -78,6 +81,7 @@ const TextEditor = () => {
           onChange={contents => setContents({ contents, skipUpdate: true })}
           loading={<LoadingOverlay visible />}
         />
+        <X className="absolute top-4 right-4 w-6 h-6 text-gray-500 cursor-pointer" onClick={() => onClose()}/>
       </StyledWrapper>
     </StyledEditorWrapper>
   );

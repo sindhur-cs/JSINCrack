@@ -1,11 +1,12 @@
 import React from "react";
 import type { NodeProps } from "reaflow";
 import { Node } from "reaflow";
-import useGraph from "src/containers/Editor/components/views/GraphView/stores/useGraph";
-import useModal from "src/store/useModal";
+// import useGraph from "src/containers/Editor/components/views/GraphView/stores/useGraph";
+// import useModal from "src/store/useModal";
 import type { NodeData } from "src/types/graph";
 import { ObjectNode } from "./ObjectNode";
 import { TextNode } from "./TextNode";
+import useClose from "src/store/useClose";
 
 export interface CustomNodeProps {
   node: NodeData;
@@ -21,16 +22,23 @@ const rootProps = {
 
 const CustomNodeWrapper = (nodeProps: NodeProps<NodeData["data"]>) => {
   const data = nodeProps.properties.data;
-  const setSelectedNode = useGraph(state => state.setSelectedNode);
-  const setVisible = useModal(state => state.setVisible);
+  const { onOpen } = useClose();
 
-  const handleNodeClick = React.useCallback(
-    (_: React.MouseEvent<SVGGElement, MouseEvent>, data: NodeData) => {
-      if (setSelectedNode) setSelectedNode(data);
-      setVisible("node")(true);
-    },
-    [setSelectedNode, setVisible]
-  );
+  // const setSelectedNode = useGraph(state => state.setSelectedNode);
+  // const setVisible = useModal(state => state.setVisible);
+
+  // const handleNodeClick = React.useCallback(
+  //   (_: React.MouseEvent<SVGGElement, MouseEvent>, data: NodeData) => {
+  //     if (setSelectedNode) setSelectedNode(data);
+  //     setVisible("node")(true);
+  //   },
+  //   [setSelectedNode, setVisible]
+  // );
+
+  const handleNodeClick = () => {
+    console.log("node clicked");
+    onOpen();
+  };
 
   return (
     <Node

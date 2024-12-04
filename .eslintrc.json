@@ -4,6 +4,7 @@
     "@typescript-eslint/consistent-type-imports": "error",
     "unused-imports/no-unused-imports": "error",
     "@typescript-eslint/no-explicit-any": "off",
+    "react/no-unescaped-entities": "off",
     // "prettier/prettier": "error",
     "space-in-parens": "error",
     "no-empty": "error",
@@ -11,7 +12,7 @@
     "no-irregular-whitespace": "error",
     "strict": ["error", "never"],
     "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "double", { "avoidEscape": true }],
+    // "quotes": ["error", "double", { "avoidEscape": true }],
     "semi": ["error", "always"],
     "prefer-const": "error",
     "space-before-function-paren": [

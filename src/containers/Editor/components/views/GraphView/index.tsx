@@ -112,7 +112,7 @@ const GraphCanvas = ({ isWidget }: GraphProps) => {
     <Canvas
       className="jsoncrack-canvas"
       onLayoutChange={onLayoutChange}
-      node={p => <CustomNode {...p} />}
+      node={p => <CustomNode {...p}/>}
       edge={p => <CustomEdge {...p} />}
       nodes={nodes}
       edges={edges}

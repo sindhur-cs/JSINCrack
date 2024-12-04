@@ -15,6 +15,7 @@ import { UpgradeModal } from "src/containers/Modals";
 import { Toolbar } from "src/containers/Toolbar";
 import useConfig from "src/store/useConfig";
 import useFile from "src/store/useFile";
+import { Sidebar } from "lucide-react";
 
 const ModalController = dynamic(() => import("src/layout/ModalController"));
 const ExternalMode = dynamic(() => import("src/layout/ExternalMode"));

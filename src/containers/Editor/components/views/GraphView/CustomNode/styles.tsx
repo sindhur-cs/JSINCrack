@@ -37,7 +37,7 @@ export const StyledForeignObject = styled.foreignObject<{ $isObject?: boolean }>
   font-family: monospace;
   font-size: 12px;
   font-weight: 500;
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
 
   &.searched {

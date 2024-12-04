@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import GlobalStyle from "src/constants/globalStyle";
 import { SEO } from "src/constants/seo";
 import { lightTheme } from "src/constants/theme";
+import "../global.css";
 
 const theme = createTheme({
   autoContrast: true,

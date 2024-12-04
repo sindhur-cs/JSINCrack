@@ -5,6 +5,9 @@ import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import useGraph from "src/containers/Editor/components/views/GraphView/stores/useGraph";
 import { FullscreenDropzone } from "./components/FullscreenDropzone";
+import Sidebar from "../Sidebar";
+import { Code } from "lucide-react";
+import useJsonEditor from "src/store/useJsonEditor";
 
 export const StyledEditor = styled(Allotment)`
   position: relative !important;
@@ -27,20 +30,29 @@ const LiveEditor = dynamic(() => import("src/containers/Editor/components/LiveEd
 
 export const Editor = () => {
   const fullscreen = useGraph(state => state.fullscreen);
+  const { onOpen, isOpen } = useJsonEditor();
+
+  const handleJsonEditor = () => {
+    onOpen();
+  }
 
   return (
     <>
+      {!isOpen && <div className="absolute top-20 left-10 z-50 h-10 w-10 text-white bg-black flex items-center justify-center rounded-full cursor-pointer" onClick={handleJsonEditor}>
+        <Code/>
+      </div>}
       <StyledEditor proportionalLayout={false}>
-        <Allotment.Pane
+        {isOpen && <Allotment.Pane
           preferredSize={450}
           minSize={fullscreen ? 0 : 300}
           maxSize={800}
           visible={!fullscreen}
         >
           <TextEditor />
-        </Allotment.Pane>
+        </Allotment.Pane>}
         <Allotment.Pane minSize={0}>
           <LiveEditor />
+          <Sidebar/>
         </Allotment.Pane>
       </StyledEditor>
       <FullscreenDropzone />
