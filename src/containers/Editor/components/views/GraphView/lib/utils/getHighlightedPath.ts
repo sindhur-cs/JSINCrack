@@ -1,6 +1,6 @@
 import type { NodeData, EdgeData } from "src/types/graph";
 
-type Outgoers = [NodeData[], string[]];
+type Outgoers = [NodeData[], EdgeData[]];
 
 export const getHighlightedPath = (
   nodeId: string,
@@ -10,6 +10,7 @@ export const getHighlightedPath = (
 ): Outgoers => {
   let outgoerNodes: NodeData[] = [];
   const matchingNodes: string[] = [];
+  const outgoerEdges: EdgeData[] = [];
 
   if (parent.includes(nodeId)) {
     const initialParentNode = nodes.find(n => n.id === nodeId);
@@ -23,6 +24,8 @@ export const getHighlightedPath = (
   // };
 
   const findOutgoers = (currentNodeId: string) => {
+    console.log("Highlighted path edges ", edges.filter(e => e.from === currentNodeId));
+    outgoerEdges.push(...edges.filter(e => e.from === currentNodeId));
     const outgoerIds = edges.filter(e => e.from === currentNodeId).map(e => e.to);
     console.log("outgoerIds ", outgoerIds);
     
@@ -53,5 +56,7 @@ export const getHighlightedPath = (
 
   findOutgoers(nodeId);
 
-  return [outgoerNodes, matchingNodes];
+  console.log("outgoerNodes ", outgoerNodes);
+  
+  return [outgoerNodes, outgoerEdges];
 };

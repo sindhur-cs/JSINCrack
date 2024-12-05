@@ -38,6 +38,7 @@ export const StyledForeignObject = styled.foreignObject<{ $isObject?: boolean }>
   font-size: 12px;
   font-weight: 500;
   overflow: visible;
+  // opacity: 0.2;
 
   &.searched {
     background: rgba(27, 255, 0, 0.1);

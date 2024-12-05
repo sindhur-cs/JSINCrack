@@ -6,6 +6,7 @@ import { Node } from "reaflow";
 import type { NodeData } from "src/types/graph";
 import { ObjectNode } from "./ObjectNode";
 import { TextNode } from "./TextNode";
+import useHighlight from "src/store/useHighlight";
 
 export interface CustomNodeProps {
   node: NodeData;
@@ -21,6 +22,7 @@ const rootProps = {
 
 const CustomNodeWrapper = (nodeProps: NodeProps<NodeData["data"]>) => {
   const data = nodeProps.properties.data;
+  const { highlightedNodes } = useHighlight();
 
   // const setSelectedNode = useGraph(state => state.setSelectedNode);
   // const setVisible = useModal(state => state.setVisible);
@@ -33,12 +35,20 @@ const CustomNodeWrapper = (nodeProps: NodeProps<NodeData["data"]>) => {
   //   [setSelectedNode, setVisible]
   // );
 
+  console.log("highlightedNodes truth", highlightedNodes, nodeProps.id, highlightedNodes.has(nodeProps.id.slice(11)));
+  const isPresent = highlightedNodes.has(nodeProps.id.slice(11)) || highlightedNodes.size === 0;
+  console.log("isPresent", isPresent);
+
   return (
     <Node
       {...nodeProps}
       {...(data?.isEmpty && rootProps)}
       animated={false}
       label={null as any}
+      style={{
+        fill: "white",
+        opacity: isPresent ? 1 : 0.4,
+      }}
     >
       {({ node, x, y }) => {
         if (Array.isArray(nodeProps.properties.text)) {

@@ -8,6 +8,7 @@ import useToggleHide from "src/hooks/useToggleHide";
 import useConfig from "src/store/useConfig";
 import { TextRenderer } from "./TextRenderer";
 import * as Styled from "./styles";
+import useHighlight from "src/store/useHighlight";
 
 const StyledExpand = styled.button`
   pointer-events: all;
@@ -60,6 +61,7 @@ const Node = ({ node, x, y, hasCollapse = false }: CustomNodeProps) => {
   const isExpanded = useGraph(state => state.collapsedParents.includes(id));
   const isImage = imagePreviewEnabled && isContentImage(text as string);
   const value = JSON.stringify(text).replaceAll('"', "");
+  const { highlightedNodes } = useHighlight();
 
   const handleExpand = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -70,7 +72,7 @@ const Node = ({ node, x, y, hasCollapse = false }: CustomNodeProps) => {
   };
 
   return (
-    <Styled.StyledForeignObject width={width} height={height} x={0} y={0}>
+  <Styled.StyledForeignObject width={width} height={height} x={0} y={0} className={highlightedNodes.has(id) || highlightedNodes.size === 0 ? "opacity-100 text-opacity-100" : "opacity-20 text-opacity-20"}>
       {isImage ? (
         <StyledImageWrapper>
           <StyledImage src={text as string} width="70" height="70" loading="lazy" />
