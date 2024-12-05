@@ -30,7 +30,7 @@ const Header = () => {
 
 const EntryCard = ({ title, language, hasErrors }: EntryCardProps) => {
   return (
-    <div className="grid grid-cols-12 bg-white shadow-md rounded-lg p-4 mb-4 hover:bg-gray-50 transition-colors duration-200">
+    <div className="grid grid-cols-12 bg-white shadow-md rounded-lg p-4 mb-4 hover:bg-gray-50 transition-colors duration-200 z-50">
         <div className="flex items-center gap-4 col-span-6">
           <Checkbox/>
           <div className="flex flex-col items-start justify-center">
@@ -69,7 +69,7 @@ const Sidebar = () => {
 
   return (
     <>
-    <div className={`absolute top-0 right-0 min-w-96 bg-white border-r border-gray-200 h-full p-6 overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
+    <div className={`absolute top-0 right-0 min-w-96 z-50 bg-white border-r border-gray-200 h-full p-6 overflow-y-auto ${isOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}>
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold text-gray-900">Entry Validator</h1>

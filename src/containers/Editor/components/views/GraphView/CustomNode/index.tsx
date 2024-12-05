@@ -6,7 +6,6 @@ import { Node } from "reaflow";
 import type { NodeData } from "src/types/graph";
 import { ObjectNode } from "./ObjectNode";
 import { TextNode } from "./TextNode";
-import useClose from "src/store/useClose";
 
 export interface CustomNodeProps {
   node: NodeData;
@@ -22,7 +21,6 @@ const rootProps = {
 
 const CustomNodeWrapper = (nodeProps: NodeProps<NodeData["data"]>) => {
   const data = nodeProps.properties.data;
-  const { onOpen } = useClose();
 
   // const setSelectedNode = useGraph(state => state.setSelectedNode);
   // const setVisible = useModal(state => state.setVisible);
@@ -35,16 +33,10 @@ const CustomNodeWrapper = (nodeProps: NodeProps<NodeData["data"]>) => {
   //   [setSelectedNode, setVisible]
   // );
 
-  const handleNodeClick = () => {
-    console.log("node clicked");
-    onOpen();
-  };
-
   return (
     <Node
       {...nodeProps}
       {...(data?.isEmpty && rootProps)}
-      onClick={handleNodeClick as any}
       animated={false}
       label={null as any}
     >

@@ -56,6 +56,8 @@ function handleNoChildren(
     console.log("Hey I am here in handleNoChildren ", parentType);
     const nodeFromArrayId = addNodeToGraph({ graph, text: String(value) });
 
+    console.log("Redundant Block", String(value));
+
     if (myParentId) {
       addEdgeToGraph(graph, myParentId, nodeFromArrayId);
     }
@@ -76,6 +78,7 @@ function handleHasChildren(
   parentType?: string
 ) {
   let parentId: string | undefined;
+  console.log("Traversed children", children);
 
   if (type !== "property" && states.parentName !== "") {
     // add last brothers node and add parent node
@@ -185,7 +188,16 @@ function handleHasChildren(
   const traverseArray = () => {
     children.forEach((objectToTraverse, index, array) => {
       const nextType = array[index + 1]?.type;
-      console.log("Here traversing ", objectToTraverse.value);
+      console.log("Here traversing ", objectToTraverse.value, objectToTraverse);
+      const entryUid = objectToTraverse.children?.filter(child => child.children?.[0]?.value === "entry_uid" && referenceMap.has(child.children?.[1]?.value));
+      // when the entryUid is already in the referenceMap, we need to add an edge to the graph
+      if(entryUid && entryUid.length > 0) {
+        entryUid.forEach(e => {
+          addEdgeToGraph(graph, states.bracketOpen[states.bracketOpen.length - 1]?.id, referenceMap.get(e.children?.[1]?.value) as string);
+        });
+        // skip recursive call
+        return;
+      }
       traverseObject(objectToTraverse, nextType);
     });
   };

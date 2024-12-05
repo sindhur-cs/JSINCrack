@@ -8,6 +8,7 @@ import { FullscreenDropzone } from "./components/FullscreenDropzone";
 import Sidebar from "../Sidebar";
 import { Code } from "lucide-react";
 import useJsonEditor from "src/store/useJsonEditor";
+import useToggleStatusIcon from "src/store/useToggleStatusIcon";
 
 export const StyledEditor = styled(Allotment)`
   position: relative !important;
@@ -31,6 +32,7 @@ const LiveEditor = dynamic(() => import("src/containers/Editor/components/LiveEd
 export const Editor = () => {
   const fullscreen = useGraph(state => state.fullscreen);
   const { onOpen, isOpen } = useJsonEditor();
+  const { open, setToggle } = useToggleStatusIcon();
 
   const handleJsonEditor = () => {
     onOpen();
@@ -41,6 +43,7 @@ export const Editor = () => {
       {!isOpen && <div className="absolute top-20 left-10 z-50 h-10 w-10 text-white bg-black flex items-center justify-center rounded-full cursor-pointer" onClick={handleJsonEditor}>
         <Code/>
       </div>}
+      <button className="absolute top-20 right-10 z-10 h-10 w-40 p-6 text-lg rounded-lg text-white bg-black flex items-center justify-center cursor-pointer" onClick={() => setToggle()}>{open ? "Close" : "Validate"}</button>
       <StyledEditor proportionalLayout={false}>
         {isOpen && <Allotment.Pane
           preferredSize={450}
