@@ -8,6 +8,7 @@ import useClose from "src/store/useClose";
 import { getHighlightedPath } from "../lib/utils/getHighlightedPath";
 import useGraph from "../stores/useGraph";
 import useHighlight from "src/store/useHighlight";
+import { NodeData } from "src/types/graph";
 
 type Value = [string, string];
 
@@ -16,16 +17,17 @@ type RowProps = {
   x: number;
   y: number;
   index: number;
+  node: NodeData;
 };
 
-const Row = ({ val, x, y, index }: RowProps) => {
+const Row = ({ val, x, y, index, node }: RowProps) => {
   const key = JSON.stringify(val);
   const rowKey = JSON.stringify(val[0]).replaceAll('"', "");
   const rowValue = JSON.stringify(val[1]);
 
   return (
-    <Styled.StyledRow $value={rowValue} data-key={key} data-x={x} data-y={y + index * 17.8}>
-      <Styled.StyledKey $type="object">{rowKey}: </Styled.StyledKey>
+    <Styled.StyledRow style={{ color: node.color?.[1] }} $value={rowValue} data-key={key} data-x={x} data-y={y + index * 17.8}>
+      <Styled.StyledKey style={{ color: node.color?.[1] }} $type="object">{rowKey}: </Styled.StyledKey>
       <TextRenderer>{rowValue}</TextRenderer>
     </Styled.StyledRow>
   );
@@ -52,8 +54,10 @@ const Node = ({ node, x, y }: CustomNodeProps) => {
     onOpen();
   }
 
+  console.log("Color", node.color);
+
   return (
-    <Styled.StyledForeignObject width={node.width} height={node.height} x={0} y={0} $isObject onClick={handleNodeClick} className={(highlightedNodes.has(node.id) || highlightedNodes.size === 0) ? "opacity-100 text-opacity-100" : "opacity-20 text-opacity-20"}>
+    <Styled.StyledForeignObject width={node.width} height={node.height} x={0} y={0} $isObject style={{ backgroundColor: node.color?.[0] }} onClick={handleNodeClick} className={`${(highlightedNodes.has(node.id) || highlightedNodes.size === 0) ? "opacity-100 text-opacity-100" : "opacity-20 text-opacity-20"}`}>
       {open ? 
         (!(node.isError) ? <div className="flex items-center justify-center absolute -top-2 -right-2 z-50 bg-green-500 rounded-full w-8 h-8 cursor-pointer" onClick={handleIconClick}>
             <CheckCircle className="text-white w-5 h-5" />
@@ -65,7 +69,7 @@ const Node = ({ node, x, y }: CustomNodeProps) => {
           : 
         null}
       {(node.text as Value[]).map((val, idx) => (
-        <Row val={val} index={idx} x={x} y={y} key={idx} />
+        <Row val={val} index={idx} x={x} y={y} key={idx} node={node} />
       ))}
     </Styled.StyledForeignObject>
   );

@@ -6,6 +6,7 @@ export interface NodeData {
   width: number;
   height: number;
   isError: boolean;
+  color?: string[];
   path?: string;
   data: {
     type: NodeType;

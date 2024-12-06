@@ -55,10 +55,6 @@ const StyledEditorWrapper = styled.div<{ $widget: boolean; $showRulers: boolean 
     pointer-events: none;
   }
 
-  // rect {
-  //   fill: ${({ theme }) => theme.BACKGROUND_NODE};
-  // }
-
   @media only screen and (max-width: 768px) {
     height: ${({ $widget }) => ($widget ? "calc(100vh - 40px)" : "100vh")};
   }

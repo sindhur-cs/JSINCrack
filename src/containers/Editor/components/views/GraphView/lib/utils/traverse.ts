@@ -6,6 +6,7 @@ import type {
 import { calculateNodeSize } from "src/containers/Editor/components/views/GraphView/lib/utils/calculateNodeSize";
 import { addEdgeToGraph } from "./addEdgeToGraph";
 import { addNodeToGraph } from "./addNodeToGraph";
+import { generateRandomColor, getContrastColor } from "src/lib/utils/generateColors";
 
 type PrimitiveOrNullType = "boolean" | "string" | "number" | "null";
 
@@ -18,6 +19,7 @@ type Traverse = {
 };
 
 const referenceMap = new Map();
+const colorMap = new Map();
 
 const isPrimitiveOrNullType = (type: unknown): type is PrimitiveOrNullType => {
   return ["boolean", "string", "number", "null"].includes(type as string);
@@ -114,9 +116,22 @@ function handleHasChildren(
         console.log("Hey I am here in handleHasChildren - else no findBrotherNodes", states.brothersNode);
         if (Array.isArray(states.brothersNode)) {
           const entryUid = states.brothersNode.find(brother => brother[0] === "entry_uid");
+          const contentTypeUid = states.brothersNode.find(brother => brother[0] === "content_type_uid");
           console.log(entryUid);
+          
           if (!referenceMap.has(entryUid?.[1])) {
-            const brothersNodeId = addNodeToGraph({ graph, text: states.brothersNode });
+            let bgColor = generateRandomColor();
+            let textColor = getContrastColor(bgColor);
+
+            if(!colorMap.has(contentTypeUid?.[1])) {
+              colorMap.set(contentTypeUid?.[1], [bgColor, textColor]);
+            }
+            else {
+              bgColor = colorMap.get(contentTypeUid?.[1])?.[0];
+              textColor = colorMap.get(contentTypeUid?.[1])?.[1];
+            }
+
+            const brothersNodeId = addNodeToGraph({ graph, text: states.brothersNode, color: [bgColor, textColor] });
             
             states.brothersNode = [];
             
@@ -134,11 +149,11 @@ function handleHasChildren(
 
             referenceMap.set(entryUid?.[1], brothersNodeId);
           }
-          else {
-            states.brothersNode = [];
-            addEdgeToGraph(graph, states.brothersParentId as string, referenceMap.get(entryUid?.[1]));
-            console.log("Same ", entryUid?.[1]);
-          }
+          // else {
+          //   states.brothersNode = [];
+          //   addEdgeToGraph(graph, states.brothersParentId as string, referenceMap.get(entryUid?.[1]));
+          //   console.log("Same ", entryUid?.[1]);
+          // }
         }
       }
     }
@@ -243,9 +258,22 @@ function handleHasChildren(
         console.log("Hey I am here in handleHasChildren - else no findBrotherNodes 2.0", states.brothersNode);
         if (Array.isArray(states.brothersNode)) {
           const entryUid = states.brothersNode.find(brother => brother[0] === "entry_uid");
+          const contentTypeUid = states.brothersNode.find(brother => brother[0] === "content_type_uid");
           console.log(entryUid);
+          
           if (!referenceMap.has(entryUid?.[1])) {
-            const brothersNodeId = addNodeToGraph({ graph, text: states.brothersNode });
+            let bgColor = generateRandomColor();
+            let textColor = getContrastColor(bgColor);
+
+            if(!colorMap.has(contentTypeUid?.[1])) {
+              colorMap.set(contentTypeUid?.[1], [bgColor, textColor]);
+            }
+            else {
+              bgColor = colorMap.get(contentTypeUid?.[1])?.[0];
+              textColor = colorMap.get(contentTypeUid?.[1])?.[1];
+            }
+
+            const brothersNodeId = addNodeToGraph({ graph, text: states.brothersNode, color: [bgColor, textColor] });
             
             states.brothersNode = [];
             
@@ -264,11 +292,11 @@ function handleHasChildren(
             states.brothersNodeProps = [...states.brothersNodeProps, brothersNodeProps];
             referenceMap.set(entryUid?.[1], brothersNodeId);
           }
-          else {
-            states.brothersNode = [];
-            addEdgeToGraph(graph, states.brothersParentId as string, referenceMap.get(entryUid?.[1]));
-            console.log("Same ", entryUid?.[1]);
-          }
+          // else {
+          //   states.brothersNode = [];
+          //   addEdgeToGraph(graph, states.brothersParentId as string, referenceMap.get(entryUid?.[1]));
+          //   console.log("Same ", entryUid?.[1]);
+          // }
         }
       }
     }

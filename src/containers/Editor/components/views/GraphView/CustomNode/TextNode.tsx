@@ -72,7 +72,7 @@ const Node = ({ node, x, y, hasCollapse = false }: CustomNodeProps) => {
   };
 
   return (
-  <Styled.StyledForeignObject width={width} height={height} x={0} y={0} className={highlightedNodes.has(id) || highlightedNodes.size === 0 ? "opacity-100 text-opacity-100" : "opacity-20 text-opacity-20"}>
+  <Styled.StyledForeignObject width={width} height={height} x={0} y={0} className={`${highlightedNodes.has(id) || highlightedNodes.size === 0 ? "opacity-100 text-opacity-100" : "opacity-20 text-opacity-20"} bg-white`}>
       {isImage ? (
         <StyledImageWrapper>
           <StyledImage src={text as string} width="70" height="70" loading="lazy" />
