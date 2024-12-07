@@ -1,5 +1,15 @@
 export const generateRandomColor = () => {
-   return `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
+  const colorPalette = [
+    "#3C1642",
+    "#6B4D69",
+    "#9F8170",
+    "#D3B99F",
+    "#E7D3C1",
+    "#89B0AE",
+    "#5F7F7E",
+    "#416165"
+  ];
+  return colorPalette[Math.floor(Math.random()*8)];
 };
 
 // acc to w3c ratio we need to contrast text color in our nodes based on content type
@@ -27,8 +37,8 @@ const getContrastRatio = (color1: string, color2: string) => {
 };
 
 export const getContrastColor = (backgroundColor: string) => {
-  const blackContrast = getContrastRatio(backgroundColor, '#000000');
+  const contrastThreshold = 2;
   const whiteContrast = getContrastRatio(backgroundColor, '#FFFFFF');
   
-  return blackContrast > whiteContrast ? '#000000' : '#FFFFFF';
+  return whiteContrast >= contrastThreshold ? '#FFFFFF' : '#000000';
 };
