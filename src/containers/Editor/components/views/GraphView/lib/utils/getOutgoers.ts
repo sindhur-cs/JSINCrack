@@ -23,6 +23,7 @@ export const getOutgoers = (
 
   console.log("OUTGOERS FREQ MAP ", freqMap);
   const findOutgoers = (currentNodeId: string) => {
+    // when collapsing dont include the already collapsed edges
     const outgoerIds = edges.filter(e => e.from === currentNodeId && (!isExpand ? !collapsedEdges.includes(e.id) : true)).map(e => e.to);
     console.log("outgoerIds ", outgoerIds);
     
@@ -38,8 +39,6 @@ export const getOutgoers = (
     
     outgoerNodes.push(...nodeList);
     nodeList.forEach(node => {
-      console.log("SINNODE ", node.id, freqMap[node.id]);
-      console.log("MMM ", collapsedEdges.map(e => e.split("-")[0].slice(1)), currentNodeId, collapsedEdges.map(e => e.split("-")[1]), node.id);
       if(!isExpand) {
         freqMap[node.id].parents.delete(currentNodeId);
         freqMap[node.id].value = freqMap[node.id].parents.size;

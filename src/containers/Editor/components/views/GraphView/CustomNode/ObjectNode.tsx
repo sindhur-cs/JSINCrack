@@ -44,7 +44,7 @@ const Node = ({ node, x, y }: CustomNodeProps) => {
 
   const handleNodeClick = () => {
     const highlightedPaths = getHighlightedPath(node.id, nodes, edges);
-    console.log("Highlighted Paths ", highlightedPaths[0]);
+    console.log("Highlighted Paths ", highlightedPaths[1]);
     console.log("NODE DATA ", node);
     setHighlightedPaths(highlightedPaths[1].map((path) => path.id), [...highlightedPaths[0].map((path) => path.id), node.id], node.id);
   };

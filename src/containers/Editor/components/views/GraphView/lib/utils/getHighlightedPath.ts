@@ -11,6 +11,7 @@ export const getHighlightedPath = (
   let outgoerNodes: NodeData[] = [];
   const matchingNodes: string[] = [];
   const outgoerEdges: EdgeData[] = [];
+  const visitedNodes: string[] = [];
 
   if (parent.includes(nodeId)) {
     const initialParentNode = nodes.find(n => n.id === nodeId);
@@ -20,36 +21,32 @@ export const getHighlightedPath = (
 
   const findOutgoers = (currentNodeId: string) => {
     console.log("Highlighted path edges ", edges.filter(e => e.from === currentNodeId));
-    outgoerEdges.push(...edges.filter(e => e.from === currentNodeId));
     const outgoerIds = edges.filter(e => e.from === currentNodeId).map(e => e.to);
+    outgoerEdges.push(...edges.filter(e => e.from === currentNodeId));
     console.log("outgoerIds ", outgoerIds);
     
     const nodeList = nodes.filter(n => {
       if (parent.includes(n.id) && !matchingNodes.includes(n.id)) matchingNodes.push(n.id);
       
-      if(outgoerIds.includes(n.id) && !parent.includes(n.id)) {
+      // exclude the nodeId and n.id because that would lead the clicked node to collapse as well 
+      if(outgoerIds.includes(n.id) && !parent.includes(n.id) && n.id !== nodeId) {
         return n;
       }
     });
-    
+
     console.log("nodelist ", nodeList, edges.filter(e => e.from === currentNodeId));
     
     outgoerNodes.push(...nodeList);
     nodeList.forEach(node => {
       // go through this 
-      if(node.id !== nodeId) {
+      if(!visitedNodes.includes(node.id)) {
+        visitedNodes.push(node.id);
         findOutgoers(node.id);
-      }
-      else {
-        // set outgoerNodes without the nodeId to avoid cyclic dependency recursion
-        outgoerNodes = outgoerNodes.filter(node => node.id !== nodeId);
       }
     });
   };
 
   findOutgoers(nodeId);
-
-  console.log("outgoerNodes ", outgoerNodes);
   
   return [outgoerNodes, outgoerEdges];
 };
