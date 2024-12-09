@@ -6,6 +6,7 @@ import { getChildrenEdges } from "src/containers/Editor/components/views/GraphVi
 import { getOutgoers } from "src/containers/Editor/components/views/GraphView/lib/utils/getOutgoers";
 import type { NodeData, EdgeData } from "src/types/graph";
 import useJson from "../../../../../../store/useJson";
+import { calculateIncomingEdges } from "../lib/utils/calculateIncomingEdges";
 
 export interface Graph {
   viewPort: ViewPort | null;
@@ -34,7 +35,7 @@ const initialStates: Graph = {
   collapseAll: false,
   nodes: [],
   edges: [],
-  freqMap: {},
+  freqMap: new Map(),
   expandedNodes: [],
   collapsedNodes: [],
   collapsedEdges: [],
@@ -78,6 +79,10 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
   setGraph: (data, options) => {
     const { nodes, edges } = parser(data ?? useJson.getState().json);
 
+    calculateIncomingEdges(edges, get().freqMap);
+
+    console.log("FINAL FREQ MAP ", get().freqMap);
+
     if (get().collapseAll) {
       set({ nodes, edges, ...options });
       get().collapseGraph();
@@ -105,10 +110,11 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
       get().edges,
       get().collapsedParents,
       get().freqMap,
-      [],
-      true
+      true,
+      get().collapsedNodes,
+      get().collapsedEdges
     );
-    const childrenEdges = getChildrenEdges(childrenNodes, get().edges);
+    const childrenEdges = getChildrenEdges(childrenNodes, get().edges, nodeId, get().freqMap, true);
 
     console.log("Expand Nodes", childrenNodes);
 
@@ -136,9 +142,9 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
   },
   collapseNodes: nodeId => {
     console.log("collapsed nodes: ", get().getCollapsedEdgeIds());
-    const [childrenNodes] = getOutgoers(nodeId, get().nodes, get().edges, [], get().freqMap, get().expandedNodes, false);
+    const [childrenNodes] = getOutgoers(nodeId, get().nodes, get().edges, [], get().freqMap, false, get().collapsedNodes, get().collapsedEdges);
     // add another nodeId param
-    const childrenEdges = getChildrenEdges(childrenNodes, get().edges, nodeId);
+    const childrenEdges = getChildrenEdges(childrenNodes, get().edges, nodeId, get().freqMap);
 
     console.log("state based freq map ", get().freqMap);
 

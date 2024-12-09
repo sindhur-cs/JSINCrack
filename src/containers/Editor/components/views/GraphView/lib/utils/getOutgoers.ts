@@ -8,14 +8,12 @@ export const getOutgoers = (
   edges: EdgeData[],
   parent: string[] = [],
   freqMap: any,
-  expandedNodes: string[],
-  isExpand: boolean
+  isExpand: boolean,
+  collapsedNodes: string[],
+  collapsedEdges: string[]
 ): Outgoers => {
   let outgoerNodes: NodeData[] = [];
   const matchingNodes: string[] = [];
-  let actualNodeList: NodeData[] = [];
-  const actualOutgoerNodes: NodeData[] = [];
-  console.log(isExpand, expandedNodes);
 
   if (parent.includes(nodeId)) {
     const initialParentNode = nodes.find(n => n.id === nodeId);
@@ -23,117 +21,49 @@ export const getOutgoers = (
     if (initialParentNode) outgoerNodes.push(initialParentNode);
   }
 
-  const findActualOutgoers = (currentNodeId: string) => {
-    const outgoerEdges = edges.filter(e => {
-      if(freqMap[e.to] && freqMap[e.to].parent !== e.from) {
-        freqMap[e.to].value++;
-      }
-      else {
-        freqMap[e.to] = {
-          value: 1,
-          parent: e.from
-        };
-      }
-      return e.from === currentNodeId;
-    });
-    const outgoerIds = outgoerEdges.map(e => e.to);
-    console.log("outgoerIds ", outgoerIds);
-    
-    actualNodeList = nodes.filter(n => {
-      if (parent.includes(n.id) && !matchingNodes.includes(n.id)) matchingNodes.push(n.id);
-
-      // incoming edges lesser or equal to 1 add to nodelist so that it is removed
-      return (outgoerIds.includes(n.id) && !parent.includes(n.id));
-    });
-    console.log("actualNodelist ", actualNodeList, edges.filter(e => e.from === currentNodeId));
-    
-    actualOutgoerNodes.push(...actualNodeList);
-    actualNodeList.forEach(node => {
-      // go through this 
-      console.log(nodeId, node.id);
-      if(node.id !== nodeId) {
-        findActualOutgoers(node.id);
-      }
-    });
-  };
-
-  if(Object.keys(freqMap).length === 0) {
-    findActualOutgoers(nodeId);
-    console.log("actualOutgoersNodes ", actualOutgoerNodes);
-  }
-
-  const fMap = freqMap;
-
-  // incoming nodes
-  // const incomingEdgesGreaterThanOne = (nodeId: string) => {
-  //   return fMap[nodeId].value > 1;
-  // };
-
+  console.log("OUTGOERS FREQ MAP ", freqMap);
   const findOutgoers = (currentNodeId: string) => {
-    const outgoerIds = edges.filter(e => e.from === currentNodeId).map(e => e.to);
+    const outgoerIds = edges.filter(e => e.from === currentNodeId && (!isExpand ? !collapsedEdges.includes(e.id) : true)).map(e => e.to);
     console.log("outgoerIds ", outgoerIds);
     
     const nodeList = nodes.filter(n => {
       if (parent.includes(n.id) && !matchingNodes.includes(n.id)) matchingNodes.push(n.id);
       
-      // const incomingEdges = incomingEdgesGreaterThanOne(n.id);
-
-      // incoming edges lesser or equal to 1 add to nodelist so that it is removed
-      if(outgoerIds.includes(n.id) && !parent.includes(n.id)) {
+      if(outgoerIds.includes(n.id) && !parent.includes(n.id) && n.id !== nodeId) {
         return n;
       }
     });
+
     console.log("nodelist ", nodeList, edges.filter(e => e.from === currentNodeId));
     
     outgoerNodes.push(...nodeList);
     nodeList.forEach(node => {
-      // go through this 
-      console.log(nodeId, node.id);
-      if(node.id !== nodeId) {
-        console.log("Option id ", node.id);
-        if(isExpand) {
-          fMap[node.id].value++;
+      console.log("SINNODE ", node.id, freqMap[node.id]);
+      console.log("MMM ", collapsedEdges.map(e => e.split("-")[0].slice(1)), currentNodeId, collapsedEdges.map(e => e.split("-")[1]), node.id);
+      if(!isExpand) {
+        freqMap[node.id].parents.delete(currentNodeId);
+        freqMap[node.id].value = freqMap[node.id].parents.size;
+        if(freqMap[node.id].value < 0) {
+          freqMap[node.id].value = 0;
         }
-        else {
-          fMap[node.id].value--;
-        }
+      }
+
+      if(freqMap[node.id].value <= 0) {
         findOutgoers(node.id);
       }
-      else {
-        // set outgoerNodes without the nodeId to avoid cyclic dependency recursion
-        outgoerNodes = outgoerNodes.filter(node => node.id !== nodeId);
-      }
     });
   };
 
-  const recurseNodes = (nodeId: string) => {
-    const outgoerEdges = edges.filter(e => e.from === nodeId).map(e => e.to);
-
-    console.log("Recurse outgoerEdges ", outgoerEdges);
-
-    outgoerEdges.forEach(nodeId => {
-      // if the value is 0, it means that we need to increment a new edge recursively
-      // if not, it means that we already have edges
-      if(fMap[nodeId].value === 0) {
-        fMap[nodeId].value++;
-      }
-      console.log("Recursive nodes ", nodeId);
-      recurseNodes(nodeId);
-    });
-  };
+  console.log("FREQ MAP ", freqMap);
 
   findOutgoers(nodeId);
-  console.log("Map ", fMap);
-  console.log("Matching Nodes ", matchingNodes);
 
   if(!isExpand) {
     outgoerNodes = outgoerNodes.filter(node => {
-      if(fMap[node.id].value <= 0) {
-        console.log(node.id, fMap[node.id].value);
+      console.log("Here fMap: ", node.id);
+      if(freqMap[node.id].value === 0) {
+        console.log(node.id, freqMap[node.id]);
         return node;
-      }
-      else {
-        recurseNodes(node.id);
       }
     });
   }

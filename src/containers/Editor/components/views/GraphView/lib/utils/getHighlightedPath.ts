@@ -18,11 +18,6 @@ export const getHighlightedPath = (
     if (initialParentNode) outgoerNodes.push(initialParentNode);
   }
 
-  // incoming nodes
-  // const incomingEdgesGreaterThanOne = (nodeId: string) => {
-  //   return fMap[nodeId].value > 1;
-  // };
-
   const findOutgoers = (currentNodeId: string) => {
     console.log("Highlighted path edges ", edges.filter(e => e.from === currentNodeId));
     outgoerEdges.push(...edges.filter(e => e.from === currentNodeId));
@@ -32,13 +27,11 @@ export const getHighlightedPath = (
     const nodeList = nodes.filter(n => {
       if (parent.includes(n.id) && !matchingNodes.includes(n.id)) matchingNodes.push(n.id);
       
-      // const incomingEdges = incomingEdgesGreaterThanOne(n.id);
-
-      // incoming edges lesser or equal to 1 add to nodelist so that it is removed
       if(outgoerIds.includes(n.id) && !parent.includes(n.id)) {
         return n;
       }
     });
+    
     console.log("nodelist ", nodeList, edges.filter(e => e.from === currentNodeId));
     
     outgoerNodes.push(...nodeList);
