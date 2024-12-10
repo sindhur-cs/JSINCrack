@@ -16,9 +16,10 @@ type Traverse = {
   parentType?: string;
   myParentId?: string;
   nextType?: string;
+  selectedLocale?: string;
+  referenceMap: Map<string, string>
 };
 
-const referenceMap = new Map();
 const colorMap = new Map();
 
 const isPrimitiveOrNullType = (type: unknown): type is PrimitiveOrNullType => {
@@ -76,11 +77,15 @@ function handleHasChildren(
   states: States,
   graph: Graph,
   children: Node[],
+  referenceMap: Map<string, string>,
   myParentId?: string,
-  parentType?: string
+  parentType?: string,
+  selectedLocale?: string
 ) {
   let parentId: string | undefined;
   console.log("Traversed children", children);
+
+console.log("SELECTED LOCALE", selectedLocale);
 
   if (type !== "property" && states.parentName !== "") {
     // add last brothers node and add parent node
@@ -115,11 +120,13 @@ function handleHasChildren(
       } else {
         console.log("Hey I am here in handleHasChildren - else no findBrotherNodes", states.brothersNode);
         if (Array.isArray(states.brothersNode)) {
+          console.log("Locale BROTHERS NODE", states.brothersNode);
           const entryUid = states.brothersNode.find(brother => brother[0] === "entry_uid");
           const contentTypeUid = states.brothersNode.find(brother => brother[0] === "content_type_uid");
           console.log(entryUid);
           
-          if (!referenceMap.has(entryUid?.[1])) {
+          console.log("Locale referenceMap", selectedLocale, referenceMap, referenceMap.has(entryUid?.[1] as string));
+          if (!referenceMap.has(entryUid?.[1] as string)) {
             let bgColor = generateRandomColor();
             let textColor = getContrastColor(bgColor);
 
@@ -132,7 +139,7 @@ function handleHasChildren(
             }
 
             const brothersNodeId = addNodeToGraph({ graph, text: states.brothersNode, color: [bgColor, textColor] });
-            
+            console.log("BROTHER LOCALE", brothersNodeId);
             states.brothersNode = [];
             
             if (states.brothersParentId) {
@@ -147,7 +154,7 @@ function handleHasChildren(
               objectsFromArrayId: states.objectsFromArray[states.objectsFromArray.length - 1],
             });
 
-            referenceMap.set(entryUid?.[1], brothersNodeId);
+            referenceMap.set(entryUid?.[1] as string, brothersNodeId);
           }
           // else {
           //   states.brothersNode = [];
@@ -195,8 +202,10 @@ function handleHasChildren(
       states,
       objectToTraverse,
       parentType: type,
+      referenceMap,
       myParentId: states.bracketOpen[states.bracketOpen.length - 1]?.id,
       nextType,
+      selectedLocale,
     });
   };
 
@@ -205,6 +214,16 @@ function handleHasChildren(
       const nextType = array[index + 1]?.type;
       console.log("Here traversing ", objectToTraverse.value, objectToTraverse);
       const entryUid = objectToTraverse.children?.filter(child => child.children?.[0]?.value === "entry_uid" && referenceMap.has(child.children?.[1]?.value));
+      const locale = objectToTraverse.children?.filter(child => child.children?.[0]?.value === "locale" && child.children?.[1]?.value);
+
+      if(selectedLocale && locale?.[0]?.children?.[1]) {
+        console.log("LOCALE", locale[0].children[1].value, selectedLocale);
+        if(locale[0].children[1].value.toLowerCase() !== selectedLocale.toLowerCase()) {
+          console.log("Hey I am here in locale", locale);
+          return;
+        }
+      }
+
       // when the entryUid is already in the referenceMap, we need to add an edge to the graph
       if(entryUid && entryUid.length > 0) {
         entryUid.forEach(e => {
@@ -213,6 +232,7 @@ function handleHasChildren(
         // skip recursive call
         return;
       }
+
       traverseObject(objectToTraverse, nextType);
     });
   };
@@ -257,11 +277,13 @@ function handleHasChildren(
       } else {
         console.log("Hey I am here in handleHasChildren - else no findBrotherNodes 2.0", states.brothersNode);
         if (Array.isArray(states.brothersNode)) {
+          console.log("Locale BROTHERS NODE", states.brothersNode);
+
           const entryUid = states.brothersNode.find(brother => brother[0] === "entry_uid");
           const contentTypeUid = states.brothersNode.find(brother => brother[0] === "content_type_uid");
           console.log(entryUid);
           
-          if (!referenceMap.has(entryUid?.[1])) {
+          if (!referenceMap.has(entryUid?.[1] as string)) {
             let bgColor = generateRandomColor();
             let textColor = getContrastColor(bgColor);
 
@@ -290,7 +312,7 @@ function handleHasChildren(
             };
             
             states.brothersNodeProps = [...states.brothersNodeProps, brothersNodeProps];
-            referenceMap.set(entryUid?.[1], brothersNodeId);
+            referenceMap.set(entryUid?.[1] as string, brothersNodeId);
           }
           // else {
           //   states.brothersNode = [];
@@ -335,13 +357,17 @@ export const traverse = ({
   myParentId,
   nextType,
   parentType,
+  selectedLocale,
+  referenceMap
 }: Traverse) => {
   const graph = states.graph;
   const { type, children, value } = objectToTraverse;
 
+  console.log("HERE JSON", selectedLocale, objectToTraverse);
+
   if (!children) {
     handleNoChildren(value, states, graph, myParentId, parentType, nextType);
   } else if (children) {
-    handleHasChildren(type, states, graph, children, myParentId, parentType);
+    handleHasChildren(type, states, graph, children, referenceMap, myParentId, parentType, selectedLocale);
   }
 };

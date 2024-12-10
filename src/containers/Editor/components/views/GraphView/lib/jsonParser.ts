@@ -8,6 +8,7 @@ import { traverse } from "./utils/traverse";
 export type Graph = {
   nodes: NodeData[];
   edges: EdgeData[];
+  locale?: string;
 };
 
 export type States = {
@@ -45,7 +46,7 @@ function initializeStates(): States {
   };
 }
 
-export function parser(jsonStr: string): Graph {
+export function parser(jsonStr: string, referenceMap: Map<string, string>, locale?: string): Graph {
   try {
     const states = initializeStates();
     const parsedJsonTree = parseTree(jsonStr);
@@ -54,7 +55,11 @@ export function parser(jsonStr: string): Graph {
       throw new Error("Invalid document");
     }
 
-    traverse({ states, objectToTraverse: parsedJsonTree });
+    console.log("PARSED ", parsedJsonTree, locale)
+
+    traverse({ states, objectToTraverse: parsedJsonTree, selectedLocale: locale, referenceMap });
+
+    console.log("COMPUTED NODES AND EDGES", states.graph.nodes, states.graph.edges);
 
     const { notHaveParent, graph } = states;
 

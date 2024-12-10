@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { GraphView } from "src/containers/Editor/components/views/GraphView";
 import { TreeView } from "src/containers/Editor/components/views/TreeView";
@@ -31,7 +31,7 @@ const StyledLiveEditor = styled.div`
 const View = () => {
   const viewMode = useConfig(state => state.viewMode);
 
-  if (viewMode === ViewMode.Graph) return <GraphView />;
+  if (viewMode === ViewMode.Graph) return <GraphView/>;
   if (viewMode === ViewMode.Tree) return <TreeView />;
   return null;
 };
@@ -39,7 +39,7 @@ const View = () => {
 const LiveEditor = () => {
   return (
     <StyledLiveEditor onContextMenuCapture={e => e.preventDefault()}>
-      <View />
+      <View/>
     </StyledLiveEditor>
   );
 };

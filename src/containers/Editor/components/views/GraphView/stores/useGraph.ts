@@ -7,6 +7,9 @@ import { getOutgoers } from "src/containers/Editor/components/views/GraphView/li
 import type { NodeData, EdgeData } from "src/types/graph";
 import useJson from "../../../../../../store/useJson";
 import { calculateIncomingEdges } from "../lib/utils/calculateIncomingEdges";
+import { detectCycles } from "../lib/utils/detectCycles";
+import useFile from "src/store/useFile";
+import { event } from "nextjs-google-analytics";
 
 export interface Graph {
   viewPort: ViewPort | null;
@@ -24,6 +27,8 @@ export interface Graph {
   collapsedParents: string[];
   selectedNode: NodeData | null;
   path: string;
+  detectCycles: boolean;
+  locale: string;
 }
 
 const initialStates: Graph = {
@@ -36,6 +41,8 @@ const initialStates: Graph = {
   nodes: [],
   edges: [],
   freqMap: new Map(),
+  detectCycles: false,
+  locale: "",
   expandedNodes: [],
   collapsedNodes: [],
   collapsedEdges: [],
@@ -53,6 +60,7 @@ interface GraphActions {
   focusFirstNode: () => void;
   expandNodes: (nodeId: string) => void;
   expandGraph: () => void;
+  setDetectCycles: () => void,
   collapseNodes: (nodeId: string) => void;
   collapseGraph: () => void;
   getCollapsedNodeIds: () => string[];
@@ -64,6 +72,8 @@ interface GraphActions {
   centerView: () => void;
   clearGraph: () => void;
   setZoomFactor: (zoomFactor: number) => void;
+  setLocale: (locale: string) => void;
+  resetFreqMap: () => void;
 }
 
 const useGraph = create<Graph & GraphActions>((set, get) => ({
@@ -76,12 +86,21 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
   getCollapsedNodeIds: () => get().collapsedNodes,
   getCollapsedEdgeIds: () => get().collapsedEdges,
   setSelectedNode: nodeData => set({ selectedNode: nodeData }),
+  resetFreqMap: () => set({ freqMap: new Map() }),
   setGraph: (data, options) => {
-    const { nodes, edges } = parser(data ?? useJson.getState().json);
+    console.log("RESET DATA", data);
+    const { nodes, edges } = parser(data ?? useJson.getState().json, new Map(), get().locale);
 
     calculateIncomingEdges(edges, get().freqMap);
 
+    // detect cycles to show a warning
+    detectCycles(edges, get().setDetectCycles);
+
+    console.log("RESET GRAPH", nodes, edges);
+
     console.log("FINAL FREQ MAP ", get().freqMap);
+
+    console.log("OPTIONS", options);
 
     if (get().collapseAll) {
       set({ nodes, edges, ...options });
@@ -102,6 +121,15 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
     set({ direction });
     setTimeout(() => get().centerView(), 200);
   },
+  setLocale: (locale: string) => {
+    set({ locale });
+    console.log(get().locale, useJson.getState().json);
+    get().resetFreqMap();
+    get().setLoading(true);
+    get().setGraph(useJson.getState().json);
+    get().setLoading(false);
+  },
+  setDetectCycles: () => set({ detectCycles: true }),
   setLoading: loading => set({ loading }),
   expandNodes: nodeId => {
     const [childrenNodes, matchingNodes] = getOutgoers(

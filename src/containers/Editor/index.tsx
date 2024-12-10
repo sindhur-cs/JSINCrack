@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import styled from "styled-components";
 import { Allotment } from "allotment";
@@ -6,9 +6,10 @@ import "allotment/dist/style.css";
 import useGraph from "src/containers/Editor/components/views/GraphView/stores/useGraph";
 import { FullscreenDropzone } from "./components/FullscreenDropzone";
 import Sidebar from "../Sidebar";
-import { Code } from "lucide-react";
+import { Code, TriangleAlert } from "lucide-react";
 import useJsonEditor from "src/store/useJsonEditor";
 import useToggleStatusIcon from "src/store/useToggleStatusIcon";
+import Select from "./components/Select";
 
 export const StyledEditor = styled(Allotment)`
   position: relative !important;
@@ -33,6 +34,8 @@ export const Editor = () => {
   const fullscreen = useGraph(state => state.fullscreen);
   const { onOpen, isOpen } = useJsonEditor();
   const { open, setToggle } = useToggleStatusIcon();
+  const { detectCycles } = useGraph();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleJsonEditor = () => {
     onOpen();
@@ -40,10 +43,21 @@ export const Editor = () => {
 
   return (
     <>
-      {!isOpen && <div className="absolute top-20 left-10 z-50 h-10 w-10 text-white bg-black flex items-center justify-center rounded-full cursor-pointer" onClick={handleJsonEditor}>
-        <Code/>
+      {!isOpen && <div className="flex gap-10 items-center absolute top-20 left-10 z-50">
+          <div className="h-10 w-10 text-white bg-black flex items-center justify-center rounded-full cursor-pointer" onClick={handleJsonEditor}>
+          <Code/>
+        </div>
+        <div className="flex gap-4 items-center">
+          {detectCycles && <TriangleAlert className="text-red-500 h-6 w-6 cursor-pointer" onMouseOver={() => { setShowTooltip(true) }} onMouseLeave={() => { setShowTooltip(false) }}/>}
+          {showTooltip && <div className="bg-red-500 text-white p-2 rounded-md">Cycle has been detected in the graph</div>}
+        </div>
       </div>}
-      <button className="absolute top-20 right-10 z-10 h-10 w-40 p-6 text-lg rounded-lg text-white bg-black flex items-center justify-center cursor-pointer" onClick={() => setToggle()}>{open ? "Close" : "Validate"}</button>
+      <div className="flex gap-4 items-center absolute top-20 right-10 z-10 ">
+        <Select
+          options={[{ value: "", label: "Select Locale" }, { value: "EN", label: "English (EN)" }, { value: "FR", label: "French (FR)" }, { value: "ES", label: "Spanish (ES)" }]}
+        />
+        <button className="h-10 w-40 p-6 text-lg rounded-lg text-white bg-black flex items-center justify-center cursor-pointer" onClick={() => setToggle()}>{open ? "Close" : "Validate"}</button>
+      </div>
       <StyledEditor proportionalLayout={false}>
         {isOpen && <Allotment.Pane
           preferredSize={450}

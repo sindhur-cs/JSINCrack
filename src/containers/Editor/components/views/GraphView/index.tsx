@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { LoadingOverlay } from "@mantine/core";
 import styled from "styled-components";
 import debounce from "lodash.debounce";
 import { Space } from "react-zoomable-ui";
-import { Canvas } from "reaflow";
+import { Canvas, CanvasRef } from "reaflow";
 import type { ElkRoot } from "reaflow/dist/layout/useLayout";
 import { useLongPress } from "use-long-press";
 import { CustomNode } from "src/containers/Editor/components/views/GraphView/CustomNode";
@@ -81,7 +81,7 @@ const GraphCanvas = ({ isWidget }: GraphProps) => {
   const nodes = useGraph(state => state.nodes);
   const edges = useGraph(state => state.edges);
   const [paneWidth, setPaneWidth] = React.useState(2000);
-  const [paneHeight, setPaneHeight] = React.useState(2000);
+  const [paneHeight, setPaneHeight] = React.useState(2000);;
 
   const onLayoutChange = React.useCallback(
     (layout: ElkRoot) => {
