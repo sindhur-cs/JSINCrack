@@ -1,10 +1,10 @@
 import React from "react";
 import type { EdgeProps } from "reaflow";
 import { Edge } from "reaflow";
-import useHighlight from "src/store/useHighlight";
+import useGraph from "../stores/useGraph";
 
 const CustomEdgeWrapper = (props: EdgeProps) => {
-  const { highlighedPaths, highlightedNodes } = useHighlight();
+  const { highlighedPaths, highlightedNodes } = useGraph();
 
   return <Edge containerClassName={`edge-${props.id}`} {...props} style={{
     stroke: highlighedPaths.has(props.id.slice(11)) ? "darkblue" : !(highlighedPaths.size === 0) && "gray",

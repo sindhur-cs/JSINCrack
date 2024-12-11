@@ -54,9 +54,9 @@ export const Editor = () => {
       </div>}
       <div className="flex gap-4 items-center absolute top-20 right-10 z-10 ">
         <Select
-          options={[{ value: "", label: "Select Locale" }, { value: "EN", label: "English (EN)" }, { value: "FR", label: "French (FR)" }, { value: "ES", label: "Spanish (ES)" }]}
+          options={[{ value: "", label: "All" }, { value: "EN", label: "English (EN)" }, { value: "FR", label: "French (FR)" }, { value: "ES", label: "Spanish (ES)" }]}
         />
-        <button className="h-10 w-40 p-6 text-lg rounded-lg text-white bg-black flex items-center justify-center cursor-pointer" onClick={() => setToggle()}>{open ? "Close" : "Validate"}</button>
+        <button className="h-10 w-40 p-6 text-base rounded-lg text-white bg-black flex items-center justify-center cursor-pointer" onClick={() => setToggle()}>{open ? "Close" : "Validate"}</button>
       </div>
       <StyledEditor proportionalLayout={false}>
         {isOpen && <Allotment.Pane

@@ -7,6 +7,7 @@ export const getHighlightedPath = (
   nodes: NodeData[],
   edges: EdgeData[],
   parent: string[] = [],
+  collapsedEdges: string[]
 ): Outgoers => {
   let outgoerNodes: NodeData[] = [];
   const matchingNodes: string[] = [];
@@ -21,8 +22,8 @@ export const getHighlightedPath = (
 
   const findOutgoers = (currentNodeId: string) => {
     console.log("Highlighted path edges ", edges.filter(e => e.from === currentNodeId));
-    const outgoerIds = edges.filter(e => e.from === currentNodeId).map(e => e.to);
-    outgoerEdges.push(...edges.filter(e => e.from === currentNodeId));
+    outgoerEdges.push(...edges.filter(e => e.from === currentNodeId && !collapsedEdges.includes(e.id)));
+    const outgoerIds = outgoerEdges.filter(e => e.from === currentNodeId).map(e => e.to);
     console.log("outgoerIds ", outgoerIds);
     
     const nodeList = nodes.filter(n => {

@@ -8,8 +8,6 @@ import type { NodeData, EdgeData } from "src/types/graph";
 import useJson from "../../../../../../store/useJson";
 import { calculateIncomingEdges } from "../lib/utils/calculateIncomingEdges";
 import { detectCycles } from "../lib/utils/detectCycles";
-import useFile from "src/store/useFile";
-import { event } from "nextjs-google-analytics";
 
 export interface Graph {
   viewPort: ViewPort | null;
@@ -22,6 +20,9 @@ export interface Graph {
   edges: EdgeData[];
   freqMap: any;
   expandedNodes: string[];
+  highlighedPaths: Set<string>;
+  highlightedNodes: Set<string>;
+  currNode: string;
   collapsedNodes: string[];
   collapsedEdges: string[];
   collapsedParents: string[];
@@ -43,6 +44,9 @@ const initialStates: Graph = {
   freqMap: new Map(),
   detectCycles: false,
   locale: "",
+  highlighedPaths: new Set([]),
+  highlightedNodes: new Set([]),
+  currNode: "",
   expandedNodes: [],
   collapsedNodes: [],
   collapsedEdges: [],
@@ -74,6 +78,7 @@ interface GraphActions {
   setZoomFactor: (zoomFactor: number) => void;
   setLocale: (locale: string) => void;
   resetFreqMap: () => void;
+  setHighlightedPaths: (paths: string[], nodes: string[], nodeId: string) => void;
 }
 
 const useGraph = create<Graph & GraphActions>((set, get) => ({
@@ -263,6 +268,14 @@ const useGraph = create<Graph & GraphActions>((set, get) => ({
   },
   toggleFullscreen: fullscreen => set({ fullscreen }),
   setViewPort: viewPort => set({ viewPort }),
+  setHighlightedPaths: (paths, nodes, nodeId) => {
+    if(nodeId === get().currNode) {
+      set({ highlighedPaths: new Set([]), highlightedNodes: new Set([]), currNode: "" });
+    }
+    else {
+      set({ highlighedPaths: new Set([...paths]), highlightedNodes: new Set([...nodes]), currNode: nodeId });
+    }
+  },
 }));
 
 export default useGraph;

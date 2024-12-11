@@ -7,7 +7,6 @@ import useToggleStatusIcon from "src/store/useToggleStatusIcon";
 import useClose from "src/store/useClose";
 import { getHighlightedPath } from "../lib/utils/getHighlightedPath";
 import useGraph from "../stores/useGraph";
-import useHighlight from "src/store/useHighlight";
 import { NodeData } from "src/types/graph";
 
 type Value = [string, string];
@@ -37,13 +36,13 @@ const Node = ({ node, x, y }: CustomNodeProps) => {
   const { open } = useToggleStatusIcon();
   const { onOpen } = useClose();
   const { nodes } = useGraph();
-  const { edges} = useGraph();
-  const { setHighlightedPaths, highlightedNodes } = useHighlight();
+  const { edges, collapsedEdges } = useGraph();
+  const { setHighlightedPaths, highlightedNodes } = useGraph();
 
   console.log("SLICE highlightedNodes", node.id, highlightedNodes, highlightedNodes.has(node.id));
 
   const handleNodeClick = () => {
-    const highlightedPaths = getHighlightedPath(node.id, nodes, edges);
+    const highlightedPaths = getHighlightedPath(node.id, nodes, edges, [], collapsedEdges);
     console.log("Highlighted Paths ", highlightedPaths[1]);
     console.log("NODE DATA ", node);
     setHighlightedPaths(highlightedPaths[1].map((path) => path.id), [...highlightedPaths[0].map((path) => path.id), node.id], node.id);
